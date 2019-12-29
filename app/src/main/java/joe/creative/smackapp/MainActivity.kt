@@ -1,6 +1,7 @@
 package joe.creative.smackapp
 
 import android.os.Bundle
+import android.view.View
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+//        val navController = findNavController(R.id.nav_host)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
@@ -32,12 +33,25 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send
             ), drawerLayout
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        navView.setupWithNavController(navController)
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+//        val navController = findNavController(R.id.mainChannelName)
+//        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+        return super.onSupportNavigateUp()
+    }
+
+    fun loginBtnNavClicked(view: View) {
+
+    }
+
+    fun addChannelClick(view: View) {
+
+    }
+
+    fun sendMessageClicked(view: View) {
+
     }
 }
