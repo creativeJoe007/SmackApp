@@ -1,5 +1,6 @@
 package joe.creative.smackapp.Controller
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -13,7 +14,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loginCreateUserBtnClicked(view: View) {
-
+        val createAccountIntent = Intent(this, CreateUserActivity::class.java)
+        startActivity(createAccountIntent)
     }
 
     fun loginLoginBtnClicked(view: View) {
