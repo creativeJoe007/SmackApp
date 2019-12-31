@@ -2,10 +2,14 @@ package joe.creative.smackapp.Controller
 
 import Services.AuthService
 import Services.UserDataService
+import Utilities.BROADCAST_USER_DATA_CHANGE
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import joe.creative.smackapp.R
 import kotlinx.android.synthetic.main.activity_create_user.*
 import java.util.*
@@ -16,6 +20,7 @@ class CreateUserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
+        createSpinner.visibility = View.INVISIBLE
     }
 
     fun generateUserAvatar(view: View) {
@@ -53,19 +58,48 @@ class CreateUserActivity : AppCompatActivity() {
         val password = createPasswordText.text.toString()
         val userName = createUserNameText.text.toString()
 
-        AuthService.registerUser(this, userName, password) {
-            if(it) {
-                AuthService.loginUser(this, userName, password) { loginSucess ->
-                    if(loginSucess) AuthService.createUser(this, userName, email, userAvatar, avatarColor) {
-                        if(it) {
-                            println(UserDataService.name)
-                            println(UserDataService.avatarName)
-                            println(UserDataService.avatarColor)
-                            finish()
-                        }
+        enableSpinner(true)
+
+        if(userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+            AuthService.registerUser(this, userName, password) {
+                if(it) {
+                    AuthService.loginUser(this, userName, password) { loginSucess ->
+                        if(loginSucess) AuthService.createUser(this, userName, email, userAvatar, avatarColor) {
+                            if(it) {
+                                // Create a broadcast message
+                                val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
+                                LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
+
+                                enableSpinner(false)
+                                finish()
+                            } else errorToast()
+                        } else errorToast()
                     }
-                }
+                } else errorToast()
             }
+        } else {
+            Toast.makeText(this, "Make sure username, email and password are filled in", Toast.LENGTH_LONG)
+                .show()
+
+            enableSpinner(false)
         }
+
+    }
+
+    fun errorToast() {
+        Toast.makeText(this, "Something went wrong please try again", Toast.LENGTH_LONG)
+            .show()
+        enableSpinner(false)
+    }
+
+    fun enableSpinner(enable: Boolean) {
+        if(enable === true) {
+            createSpinner.visibility = View.VISIBLE
+        } else {
+            createSpinner.visibility = View.INVISIBLE
+        }
+        createUserBtn.isEnabled = !enable
+        createAvatarImageView.isEnabled = !enable
+        backgroundColorBtn.isEnabled = !enable
     }
 }
