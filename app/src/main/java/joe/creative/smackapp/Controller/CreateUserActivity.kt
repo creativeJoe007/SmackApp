@@ -1,6 +1,7 @@
 package joe.creative.smackapp.Controller
 
 import Services.AuthService
+import Services.UserDataService
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -22,10 +23,10 @@ class CreateUserActivity : AppCompatActivity() {
         val color = random.nextInt(2)
         val avatar = random.nextInt(28)
 
-        if(color === 0) {
-            userAvatar = "light$avatar"
+        userAvatar = if(color === 0) {
+            "light$avatar"
         } else {
-            userAvatar = "dark$avatar"
+            "dark$avatar"
         }
         val resourceId = resources.getIdentifier(userAvatar, "drawable", packageName)
         createAvatarImageView.setImageResource(resourceId)
@@ -48,13 +49,21 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserClicked(view: View) {
-        val userName = createEmailText.text.toString()
+        val email = createEmailText.text.toString()
         val password = createPasswordText.text.toString()
+        val userName = createUserNameText.text.toString()
 
         AuthService.registerUser(this, userName, password) {
             if(it) {
                 AuthService.loginUser(this, userName, password) { loginSucess ->
-                    if(loginSucess) println("uooooo")
+                    if(loginSucess) AuthService.createUser(this, userName, email, userAvatar, avatarColor) {
+                        if(it) {
+                            println(UserDataService.name)
+                            println(UserDataService.avatarName)
+                            println(UserDataService.avatarColor)
+                            finish()
+                        }
+                    }
                 }
             }
         }

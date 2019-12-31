@@ -1,5 +1,6 @@
 package Services
 
+import Utilities.CREATE_USER_URL
 import Utilities.LOGIN_URL
 import Utilities.REGISTRATION_URL
 import android.content.Context
@@ -75,6 +76,54 @@ object AuthService {
         }
 
         Volley.newRequestQueue(context).add(loginRequest)
+
+    }
+
+    fun createUser(context: Context, name: String, email: String, avatarName: String, avatarColor: String, complete: (Boolean) -> Unit) {
+
+        val jsonBody = JSONObject()
+        jsonBody.put("email", email)
+        jsonBody.put("name", name)
+        jsonBody.put("avatarName", avatarName)
+        jsonBody.put("avatarColor", avatarColor)
+        val requestBody = jsonBody.toString()
+
+        val createRequest = object : JsonObjectRequest(Method.POST, CREATE_USER_URL, null, Response.Listener {
+
+            try {
+                UserDataService.name = it.getString("name")
+                UserDataService.email = it.getString("email")
+                UserDataService.avatarName = it.getString("avatarName")
+                UserDataService.avatarColor = it.getString("avatarColor")
+                UserDataService.id = it.getString("_id")
+
+                complete(true)
+            } catch (e: JSONException) {
+                Log.d("JSON", "EXC: ${e.localizedMessage}")
+                complete(false)
+            }
+
+        }, Response.ErrorListener {
+            Log.d("ERROR", "EXC: ${it}")
+            complete(false)
+        }) {
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+
+            override fun getBody(): ByteArray {
+                return requestBody.toByteArray()
+            }
+
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                headers.put("Authorization", "Bearer $authToken")
+
+                return headers
+            }
+        }
+
+        Volley.newRequestQueue(context).add(createRequest)
 
     }
 }
