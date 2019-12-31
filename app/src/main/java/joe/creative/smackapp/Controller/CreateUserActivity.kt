@@ -1,5 +1,6 @@
 package joe.creative.smackapp.Controller
 
+import Services.AuthService
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -47,6 +48,10 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserClicked(view: View) {
+        AuthService.registerUser(this, "j@j.com", "123456") {
+            if(it) {
 
+            }
+        }
     }
 }
