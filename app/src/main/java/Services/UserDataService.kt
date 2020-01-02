@@ -25,7 +25,7 @@ object UserDataService {
             b = (scanner.nextDouble() * 255).toInt()
         }
 
-        return Color.rgb(r,g,b)
+        return Color.rgb(r, g, b)
     }
 
     fun logout() {

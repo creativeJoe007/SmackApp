@@ -46,8 +46,8 @@ class CreateUserActivity : AppCompatActivity() {
         createAvatarImageView.setBackgroundColor(Color.rgb(r,g,b))
 
         val savedR = r.toDouble() / 255
-        val savedG = r.toDouble() / 255
-        val savedB = r.toDouble() / 255
+        val savedG = g.toDouble() / 255
+        val savedB = b.toDouble() / 255
 
         avatarColor = "[$savedR, $savedG, $savedB, 1]"
 
@@ -61,9 +61,9 @@ class CreateUserActivity : AppCompatActivity() {
         enableSpinner(true)
 
         if(userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-            AuthService.registerUser(this, userName, password) {
+            AuthService.registerUser(this, email, password) {
                 if(it) {
-                    AuthService.loginUser(this, userName, password) { loginSucess ->
+                    AuthService.loginUser(this, email, password) { loginSucess ->
                         if(loginSucess) AuthService.createUser(this, userName, email, userAvatar, avatarColor) {
                             if(it) {
                                 // Create a broadcast message
