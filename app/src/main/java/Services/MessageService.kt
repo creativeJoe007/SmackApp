@@ -1,6 +1,7 @@
 package Services
 
 import Models.Channel
+import Models.Message
 import Utilities.GET_CHANNELS_URL
 import android.content.Context
 import android.util.Log
@@ -12,6 +13,7 @@ import org.json.JSONException
 
 object MessageService {
     val channels = ArrayList<Channel>()
+    val messages = ArrayList<Message>()
 
     fun getChannels(complete: (Boolean) -> Unit) {
         val channelsRequest = object: JsonArrayRequest(Method.GET, GET_CHANNELS_URL, null, Response.Listener {

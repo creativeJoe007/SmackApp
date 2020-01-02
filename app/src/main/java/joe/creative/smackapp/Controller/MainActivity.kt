@@ -1,6 +1,7 @@
 package joe.creative.smackapp.Controller
 
 import Models.Channel
+import Models.Message
 import Services.AuthService
 import Services.MessageService
 import Services.UserDataService
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         socket.connect()
         socket.on("channelCreated", onNewChannel)
+        socket.on("messageCreated", onNewMessage)
         setupAdapters()
 
         if(App.prefs.isLoggedIn) {
@@ -169,7 +171,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMessageClicked(view: View) {
-        hideKeyboard()
+        if(App.prefs.isLoggedIn && messageTextField.text.isNotEmpty() && selectedChannel !== null) {
+            val userID = UserDataService.id
+            val channelID = selectedChannel!!.id
+
+            socket.emit("newMessage", messageTextField.text.toString(), userID, channelID
+                , UserDataService.name, UserDataService.avatarName, UserDataService.avatarColor)
+
+            messageTextField.text.clear()
+            hideKeyboard()
+        }
     }
 
     fun hideKeyboard() {
@@ -190,6 +201,25 @@ class MainActivity : AppCompatActivity() {
             val newChannel = Channel(channelName, channelDescription, channelID)
             MessageService.channels.add(0, newChannel)
             channelAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private val onNewMessage = Emitter.Listener {
+        args ->
+        runOnUiThread {
+            val msgBody = args[0] as String
+            val channelID = args[2] as String
+            val userName = args[3] as String
+            val userAvatar = args[4] as String
+            val userAvatarColor = args[5] as String
+            val id = args[6] as String
+            val timeStamp = args[7] as String
+
+            val newMessage = Message(msgBody, userName, channelID, userAvatar, userAvatarColor,
+                    id, timeStamp)
+
+            MessageService.messages.add(newMessage)
+            println(newMessage.message)
         }
     }
 }
