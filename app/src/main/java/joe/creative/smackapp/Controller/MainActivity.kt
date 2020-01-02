@@ -1,5 +1,6 @@
 package joe.creative.smackapp.Controller
 
+import Adapters.MessageAdapter
 import Models.Channel
 import Models.Message
 import Services.AuthService
@@ -25,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.socket.client.IO
 import io.socket.emitter.Emitter
 import joe.creative.smackapp.R
@@ -36,12 +38,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var channelAdapter : ArrayAdapter<Channel>
+    private lateinit var messageAdapter: MessageAdapter
     var selectedChannel: Channel? = null
     val socket = IO.socket(SOCKET_URL)
 
     private fun setupAdapters() {
         channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
         channel_list.adapter = channelAdapter
+
+        messageAdapter = MessageAdapter(this, MessageService.messages)
+        messageListView.adapter = messageAdapter
+        val layoutManager = LinearLayoutManager(this)
+        messageListView.layoutManager = layoutManager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,7 +136,10 @@ class MainActivity : AppCompatActivity() {
         if(selectedChannel !== null) {
             MessageService.getMessages(selectedChannel!!.id) {
                 if(it) {
-                    for (message in MessageService.messages) println("msg: " + message.message)
+                    messageAdapter.notifyDataSetChanged()
+                    if(messageAdapter.itemCount > 0) {
+                        messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+                    }
                 }
             }
         }
@@ -146,6 +157,9 @@ class MainActivity : AppCompatActivity() {
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
             userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
             loginBtnNavHeader.text = "Login"
+
+            channelAdapter.notifyDataSetChanged()
+            messageAdapter.notifyDataSetChanged()
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -231,6 +245,11 @@ class MainActivity : AppCompatActivity() {
                     )
 
                     MessageService.messages.add(newMessage)
+
+                    messageAdapter.notifyDataSetChanged()
+                    if(messageAdapter.itemCount > 0) {
+                        messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+                    }
                 }
             }
         }
