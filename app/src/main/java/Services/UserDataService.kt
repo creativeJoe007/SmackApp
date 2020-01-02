@@ -38,5 +38,8 @@ object UserDataService {
         App.prefs.authToken = ""
         App.prefs.userEmail = ""
         App.prefs.isLoggedIn = false
+
+        MessageService.messagesClear()
+        MessageService.channelsClear()
     }
 }
