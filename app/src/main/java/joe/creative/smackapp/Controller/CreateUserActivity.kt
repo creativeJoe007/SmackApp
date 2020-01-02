@@ -61,10 +61,10 @@ class CreateUserActivity : AppCompatActivity() {
         enableSpinner(true)
 
         if(userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-            AuthService.registerUser(this, email, password) {
+            AuthService.registerUser(email, password) {
                 if(it) {
-                    AuthService.loginUser(this, email, password) { loginSucess ->
-                        if(loginSucess) AuthService.createUser(this, userName, email, userAvatar, avatarColor) {
+                    AuthService.loginUser( email, password) { loginSucess ->
+                        if(loginSucess) AuthService.createUser(userName, email, userAvatar, avatarColor) {
                             if(it) {
                                 // Create a broadcast message
                                 val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
