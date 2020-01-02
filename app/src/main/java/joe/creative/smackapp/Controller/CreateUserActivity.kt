@@ -63,9 +63,12 @@ class CreateUserActivity : AppCompatActivity() {
         if(userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
             AuthService.registerUser(this, userName, password) {
                 if(it) {
+                    println("Registered user successfully")
                     AuthService.loginUser(this, userName, password) { loginSucess ->
+                        println("Registered user successfully $loginSucess")
                         if(loginSucess) AuthService.createUser(this, userName, email, userAvatar, avatarColor) {
                             if(it) {
+                                println("Creation of user successfully $it")
                                 // Create a broadcast message
                                 val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
                                 LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
